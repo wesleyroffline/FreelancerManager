@@ -7,6 +7,8 @@ public sealed class FreelancerManagerDbContext(DbContextOptions<FreelancerManage
     : DbContext(options)
 {
     public DbSet<Receipt> Receipts => Set<Receipt>();
+    public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Contract> Contracts => Set<Contract>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -10,6 +10,7 @@ public sealed class Receipt
 {
     public Guid Id { get; private set; }
     public Guid ContractId { get; private set; }
+    public Contract Contract { get; private set; } = null!;
     public string ReceiptNumber { get; private set; } = null!;
     public decimal GrossValue { get; private set; }
     public decimal TaxDeductions { get; private set; }

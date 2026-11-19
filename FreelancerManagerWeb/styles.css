@@ -442,3 +442,65 @@ tbody tr:hover td {
         background-color: var(--danger);
         border-color: var(--danger);
     }
+/* Adicione ao final do seu styles.css */
+.forms-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tables-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+/* Ajuste no grid principal para telas grandes */
+@media (min-width: 900px) {
+    .container {
+        grid-template-columns: 1fr 2fr;
+        align-items: start;
+    }
+}
+/* Navegação por Abas */
+.tabs-nav {
+    max-width: 1280px;
+    margin: 2rem auto 0;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    margin-bottom: -2px; /* Sobrepõe a borda do container */
+}
+
+    .tab-btn:hover {
+        color: var(--primary);
+    }
+
+    .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+
+/* Ajuste para quando o workspace for exibido dentro das abas */
+.workspace {
+    margin-top: 1.5rem;
+}

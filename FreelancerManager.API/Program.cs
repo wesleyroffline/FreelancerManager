@@ -7,10 +7,7 @@ using FreelancerManager.API.Middlewares;
 using FreelancerManager.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// ---------------------------------------------------------------------------
-// 1) Serviços
-// ---------------------------------------------------------------------------
+//  Serviços
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
@@ -24,9 +21,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ---------------------------------------------------------------------------
-// 2) DbContext + SQLite (com caminho ABSOLUTO — banco sempre na pasta da API)
-// ---------------------------------------------------------------------------
+//  DbContext + SQLite (com caminho ABSOLUTO — banco sempre na pasta da API)
+
 var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Data Source=freelancer.db";
 
@@ -41,10 +37,21 @@ if (!Path.IsPathRooted(connectionStringBuilder.DataSource))
 builder.Services.AddDbContext<FreelancerManagerDbContext>(options =>
     options.UseSqlite(connectionStringBuilder.ToString()));
 
-// Injeção de Dependência do Repositório
+
+// Injeção de Dependência (Repositórios e Serviços)
+
+// Receipt (Recibos)
 builder.Services.AddScoped<IReceiptRepository, ReceiptRepository>();
 builder.Services.AddScoped<IReceiptService, ReceiptService>();
 builder.Services.AddScoped<ITaxCalculationStrategy, StandardTaxCalculationStrategy>();
+
+// Client (Clientes) - NOVOS
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IClientService, ClientService>();
+
+// Contract (Contratos) - NOVOS
+builder.Services.AddScoped<IContractRepository, ContractRepository>();
+builder.Services.AddScoped<IContractService, ContractService>();
 
 
 var app = builder.Build();
@@ -52,19 +59,18 @@ var app = builder.Build();
 app.UseCors("AllowAll");
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// ---------------------------------------------------------------------------
-// 3) Aplica migrations pendentes na inicialização.
-//    Na primeira execução, cria o arquivo freelancer.db automaticamente.
-// ---------------------------------------------------------------------------
+
+// Aplica migrations pendentes na inicialização.
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<FreelancerManagerDbContext>();
     await db.Database.MigrateAsync();
 }
 
-// ---------------------------------------------------------------------------
-// 4) Pipeline HTTP
-// ---------------------------------------------------------------------------
+
+// Pipeline HTTP
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

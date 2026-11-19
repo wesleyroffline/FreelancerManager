@@ -1,125 +1,216 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Freelancer Manager — Gestão de Recibos</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreelancerManager - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="topbar">
         <div class="topbar__inner">
             <div class="brand-block">
-                <span class="brand-name">Freelancer Manager</span>
-                <h1>Gestão de Recibos</h1>
-                <p class="topbar__subtitle">Controle de recibos emitidos, impostos e valor líquido.</p>
+                <span class="eyebrow"><span class="eyebrow__dot"></span>Área do Freelancer</span>
+                <h1>FreelancerManager</h1>
+                <p class="topbar__subtitle">Gerencie seus clientes, contratos e finanças em um só lugar.</p>
             </div>
             <div class="summary-strip">
                 <div class="summary-pill">
-                    <span class="summary-pill__label">Recibos</span>
-                    <strong id="total-count" class="summary-pill__value">0</strong>
-                </div>
-                <div class="summary-pill">
-                    <span class="summary-pill__label">Total Líquido</span>
-                    <strong id="total-net" class="summary-pill__value">R$ 0,00</strong>
+                    <span class="summary-pill__label">Status do Sistema</span>
+                    <span class="summary-pill__value" style="color: #4ade80;">Online</span>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- Barra de Navegação por Abas -->
+    <nav class="tabs-nav">
+        <button class="tab-btn active" data-target="tab-clients">Clientes</button>
+        <button class="tab-btn" data-target="tab-contracts">Contratos</button>
+        <button class="tab-btn" data-target="tab-receipts">Recibos</button>
+    </nav>
+
+    <!-- Área de Trabalho (Grid) -->
     <main class="workspace">
-        <section class="panel panel--form">
-            <div class="panel__header">
-                <h2>Emitir Novo Recibo</h2>
-                <p>Preencha os dados para calcular impostos e registrar na API.</p>
-            </div>
+        <div id="message" class="message hidden" style="grid-column: 1 / -1;"></div>
 
-            <form id="receipt-form" novalidate>
-                <div class="field">
-                    <label for="contractId">ID do Contrato (GUID)</label>
-                    <input type="text"
-                           id="contractId"
-                           required
-                           placeholder="3fa85f64-5717-4562-b3fc-2c963f66afa6" />
-                </div>
-
-                <div class="field">
-                    <label for="receiptNumber">Número do Recibo</label>
-                    <input type="text"
-                           id="receiptNumber"
-                           required
-                           placeholder="REC-2026-001" />
-                </div>
-
-                <div class="field-grid">
-                    <div class="field">
-                        <label for="grossValue">Valor Bruto (R$)</label>
-                        <input type="number"
-                               id="grossValue"
-                               step="0.01"
-                               min="0.01"
-                               required
-                               placeholder="1500.00" />
+        <!-- ABA: CLIENTES -->
+        <div id="tab-clients" class="tab-content active" style="display: contents;">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <section class="panel">
+                    <div class="panel__header">
+                        <h2>Novo Cliente</h2>
+                        <p>Cadastre as informações do contratante.</p>
                     </div>
-
-                    <div class="field">
-                        <label for="customTaxPercentage">Imposto (%)</label>
-                        <input type="number"
-                               id="customTaxPercentage"
-                               step="0.01"
-                               min="0"
-                               max="100"
-                               required
-                               placeholder="10.0" />
+                    <form id="client-form">
+                        <div class="field">
+                            <label for="clientName">Nome / Empresa</label>
+                            <input type="text" id="clientName" required placeholder="Ex: Empresa XYZ">
+                        </div>
+                        <div class="field">
+                            <label for="clientEmail">E-mail</label>
+                            <input type="email" id="clientEmail" required placeholder="contato@empresa.com">
+                        </div>
+                        <div class="field">
+                            <label for="clientDocument">CPF / CNPJ</label>
+                            <input type="text" id="clientDocument" required placeholder="Apenas números">
+                        </div>
+                        <button type="submit" class="btn-primary">Cadastrar Cliente</button>
+                    </form>
+                </section>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <section class="panel">
+                    <div class="panel__header panel__header--inline">
+                        <div>
+                            <h2>Consulta de Clientes</h2>
+                            <p>Base de clientes cadastrados.</p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="field">
-                    <label for="paymentMethod">Forma de Pagamento</label>
-                    <select id="paymentMethod" required>
-                        <option value="PIX">PIX</option>
-                        <option value="Transferência Bancária">Transferência Bancária</option>
-                        <option value="Cartão de Crédito">Cartão de Crédito</option>
-                        <option value="Boleto">Boleto</option>
-                    </select>
-                </div>
-
-                <button type="submit" id="submit-btn" class="btn-primary">Emitir Recibo</button>
-            </form>
-
-            <div id="message" class="message hidden" role="status" aria-live="polite"></div>
-        </section>
-
-        <section class="panel panel--table">
-            <div class="panel__header panel__header--inline">
-                <div>
-                    <h2>Recibos Emitidos</h2>
-                    <p>Histórico sincronizado com o banco da aplicação.</p>
-                </div>
-                <button type="button" id="refresh-btn" class="btn-secondary">Atualizar</button>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>E-mail</th>
+                                    <th>Documento</th>
+                                    <th>Ações</th> 
+                                </tr>
+                            </thead>
+                            <tbody id="clients-table-body"></tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
+        </div>
 
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Número</th>
-                            <th>Bruto</th>
-                            <th>Imposto</th>
-                            <th>Líquido</th>
-                            <th>Pagamento</th>
-                            <th>Data</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="receipts-table-body">
-                        <tr>
-                            <td colspan="7" class="empty-state">Nenhum recibo carregado ainda.</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <!-- ABA: CONTRATOS -->
+        <div id="tab-contracts" class="tab-content" style="display: none;">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <section class="panel">
+                    <div class="panel__header">
+                        <h2>Novo Contrato</h2>
+                        <p>Vincule um projeto a um cliente.</p>
+                    </div>
+                    <form id="contract-form">
+                        <div class="field">
+                            <label for="contractClientId">Cliente</label>
+                            <select id="contractClientId" required>
+                                <option value="">Carregando clientes...</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="contractTitle">Título do Projeto</label>
+                            <input type="text" id="contractTitle" required placeholder="Ex: Criação de Identidade Visual">
+                        </div>
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="contractTotalValue">Valor Total (R$)</label>
+                                <input type="number" id="contractTotalValue" step="0.01" required placeholder="5000.00">
+                            </div>
+                            <div class="field">
+                                <label for="contractStartDate">Data Início</label>
+                                <input type="date" id="contractStartDate" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Criar Contrato</button>
+                    </form>
+                </section>
             </div>
-        </section>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <section class="panel">
+                    <div class="panel__header panel__header--inline">
+                        <div>
+                            <h2>Consulta de Contratos</h2>
+                            <p>Projetos ativos e concluídos.</p>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Valor Total</th>
+                                    <th>Data Início</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contracts-table-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- ABA: RECIBOS -->
+        <div id="tab-receipts" class="tab-content" style="display: none;">
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <section class="panel">
+                    <div class="panel__header">
+                        <h2>Emitir Recibo</h2>
+                        <p>Gere as notas fiscais dos seus serviços.</p>
+                    </div>
+                    <form id="receipt-form">
+                        <div class="field">
+                            <label for="receiptContractId">Contrato Referente</label>
+                            <select id="receiptContractId" required>
+                                <option value="">Carregando contratos...</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="receiptNumber">Número do Recibo</label>
+                            <input type="text" id="receiptNumber" required placeholder="Ex: REC-2026-001">
+                        </div>
+                        <div class="field-grid">
+                            <div class="field">
+                                <label for="grossValue">Valor Bruto (R$)</label>
+                                <input type="number" id="grossValue" step="0.01" required placeholder="1000.00">
+                            </div>
+                            <div class="field">
+                                <label for="customTaxPercentage">Imposto (%)</label>
+                                <input type="number" id="customTaxPercentage" step="0.01" required placeholder="10.0">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="paymentMethod">Forma de Pagamento</label>
+                            <select id="paymentMethod" required>
+                                <option value="PIX">PIX</option>
+                                <option value="Transferência Bancária">Transferência Bancária</option>
+                                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Emitir Recibo</button>
+                    </form>
+                </section>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <section class="panel">
+                    <div class="panel__header panel__header--inline">
+                        <div>
+                            <h2>Consulta de Recibos</h2>
+                            <p>Histórico financeiro recente.</p>
+                        </div>
+                        <button id="refresh-btn" class="btn-secondary" onclick="loadReceiptsTable()">Atualizar</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Número</th>
+                                    <th>Bruto</th>
+                                    <th>Imposto</th>
+                                    <th>Líquido</th>
+                                    <th>Pagamento</th>
+                                    <th>Data</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receipts-table-body"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
     </main>
 
     <script src="app.js"></script>

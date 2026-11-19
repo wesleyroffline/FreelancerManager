@@ -48,11 +48,11 @@ public sealed class ReceiptConfiguration : IEntityTypeConfiguration<Receipt>
         builder.HasIndex(r => r.ReceiptNumber)
             .IsUnique()
             .HasDatabaseName("IX_Receipts_ReceiptNumber_Unique");
+        // Relacionamento: 1 Contrato tem N Recibos
+        builder.HasOne(r => r.Contract)
+               .WithMany()
+               .HasForeignKey(r => r.ContractId)
+               .OnDelete(DeleteBehavior.Restrict);
 
-        // Relacionamento comentado — habilitar quando a entidade Contract existir.
-        // builder.HasOne<Contract>()
-        //     .WithMany()
-        //     .HasForeignKey(r => r.ContractId)
-        //     .OnDelete(DeleteBehavior.Restrict);
     }
 }
