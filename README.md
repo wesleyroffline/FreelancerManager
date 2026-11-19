@@ -1,8 +1,4 @@
 FreelancerManager - Sistema de Gestão de Freelancer e Emissão de Recibos
-https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet
-https://img.shields.io/badge/C%23-12.0-239120?style=for-the-badge&logo=c-sharp
-https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite
-https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black
 
 Um sistema Full-Stack desenvolvido para profissionais autônomos (designers, desenvolvedores, etc.) gerenciarem seus clientes, contratos e finanças de forma centralizada, incluindo a emissão automatizada de recibos.
 
