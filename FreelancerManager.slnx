@@ -3,4 +3,5 @@
   <Project Path="FreelancerManager.Application/FreelancerManager.Application.csproj" />
   <Project Path="FreelancerManager.Domain/FreelancerManager.Domain.csproj" />
   <Project Path="FreelancerManager.Infrastructure/FreelancerManager.Infrastructure.csproj" />
+  <Project Path="FreelancerManager.Tests/FreelancerManager.Tests.csproj" />
 </Solution>
