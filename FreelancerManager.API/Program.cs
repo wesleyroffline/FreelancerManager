@@ -12,6 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 // 1) Serviços
 // ---------------------------------------------------------------------------
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -40,6 +49,7 @@ builder.Services.AddScoped<ITaxCalculationStrategy, StandardTaxCalculationStrate
 
 var app = builder.Build();
 
+app.UseCors("AllowAll");
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // ---------------------------------------------------------------------------

@@ -28,4 +28,17 @@ public sealed class ReceiptsController(IReceiptService service) : ControllerBase
         var receipts = await service.GetAllAsync(cancellationToken);
         return Ok(receipts);
     }
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateReceiptRequestDto request, CancellationToken cancellationToken)
+    {
+        await service.UpdateAsync(id, request, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpDelete("{id:guid}")] // ESTA LINHA É A CHAVE PARA O 405 SUMIR
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        var deleted = await service.DeleteAsync(id, cancellationToken);
+        return deleted ? NoContent() : NotFound();
+    }
 }

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Freelancer Manager — Gestão de Recibos</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar__inner">
+            <div class="brand-block">
+                <span class="brand-name">Freelancer Manager</span>
+                <h1>Gestão de Recibos</h1>
+                <p class="topbar__subtitle">Controle de recibos emitidos, impostos e valor líquido.</p>
+            </div>
+            <div class="summary-strip">
+                <div class="summary-pill">
+                    <span class="summary-pill__label">Recibos</span>
+                    <strong id="total-count" class="summary-pill__value">0</strong>
+                </div>
+                <div class="summary-pill">
+                    <span class="summary-pill__label">Total Líquido</span>
+                    <strong id="total-net" class="summary-pill__value">R$ 0,00</strong>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="workspace">
+        <section class="panel panel--form">
+            <div class="panel__header">
+                <h2>Emitir Novo Recibo</h2>
+                <p>Preencha os dados para calcular impostos e registrar na API.</p>
+            </div>
+
+            <form id="receipt-form" novalidate>
+                <div class="field">
+                    <label for="contractId">ID do Contrato (GUID)</label>
+                    <input type="text"
+                           id="contractId"
+                           required
+                           placeholder="3fa85f64-5717-4562-b3fc-2c963f66afa6" />
+                </div>
+
+                <div class="field">
+                    <label for="receiptNumber">Número do Recibo</label>
+                    <input type="text"
+                           id="receiptNumber"
+                           required
+                           placeholder="REC-2026-001" />
+                </div>
+
+                <div class="field-grid">
+                    <div class="field">
+                        <label for="grossValue">Valor Bruto (R$)</label>
+                        <input type="number"
+                               id="grossValue"
+                               step="0.01"
+                               min="0.01"
+                               required
+                               placeholder="1500.00" />
+                    </div>
+
+                    <div class="field">
+                        <label for="customTaxPercentage">Imposto (%)</label>
+                        <input type="number"
+                               id="customTaxPercentage"
+                               step="0.01"
+                               min="0"
+                               max="100"
+                               required
+                               placeholder="10.0" />
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="paymentMethod">Forma de Pagamento</label>
+                    <select id="paymentMethod" required>
+                        <option value="PIX">PIX</option>
+                        <option value="Transferência Bancária">Transferência Bancária</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Boleto">Boleto</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn-primary">Emitir Recibo</button>
+            </form>
+
+            <div id="message" class="message hidden" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="panel panel--table">
+            <div class="panel__header panel__header--inline">
+                <div>
+                    <h2>Recibos Emitidos</h2>
+                    <p>Histórico sincronizado com o banco da aplicação.</p>
+                </div>
+                <button type="button" id="refresh-btn" class="btn-secondary">Atualizar</button>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Número</th>
+                            <th>Bruto</th>
+                            <th>Imposto</th>
+                            <th>Líquido</th>
+                            <th>Pagamento</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="receipts-table-body">
+                        <tr>
+                            <td colspan="7" class="empty-state">Nenhum recibo carregado ainda.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

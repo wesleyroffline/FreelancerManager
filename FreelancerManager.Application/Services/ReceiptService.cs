@@ -1,7 +1,7 @@
 using FreelancerManager.Application.DTOs;
 using FreelancerManager.Application.Interfaces.Repositories;
-using FreelancerManager.Application.Services;
 using FreelancerManager.Domain.Entities;
+using FreelancerManager.Domain.Exceptions;
 
 namespace FreelancerManager.Application.Services;
 
@@ -11,10 +11,8 @@ public sealed class ReceiptService(
 {
     public async Task<ReceiptResponseDto> CreateAsync(CreateReceiptRequestDto request, CancellationToken cancellationToken = default)
     {
-        // 1. A Application calcula o imposto usando a estratégia escolhida
         var taxDeduction = taxStrategy.CalculateDeduction(request.GrossValue, request.CustomTaxPercentage);
 
-        // 2. A Application instancia o Domain (O Domain valida e calcula o NetValue)
         var receipt = new Receipt(
             request.ContractId,
             request.ReceiptNumber,
@@ -23,7 +21,6 @@ public sealed class ReceiptService(
             request.PaymentMethod,
             DateTime.UtcNow);
 
-        // 3. Persiste
         await repository.AddAsync(receipt, cancellationToken);
 
         return MapToDto(receipt);
@@ -41,6 +38,28 @@ public sealed class ReceiptService(
         return receipts.Select(MapToDto).ToList();
     }
 
+    // --- MÉTODOS NOVOS ADICIONADOS AQUI DENTRO ---
+    public async Task UpdateAsync(Guid id, UpdateReceiptRequestDto request, CancellationToken cancellationToken = default)
+    {
+        var receipt = await repository.GetByIdAsync(id, cancellationToken)
+            ?? throw new DomainException("Recibo não encontrado.");
+
+        var taxDeduction = taxStrategy.CalculateDeduction(request.GrossValue, request.CustomTaxPercentage);
+
+        receipt.Update(request.GrossValue, taxDeduction, request.PaymentMethod);
+
+        repository.Update(receipt);
+    }
+
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var receipt = await repository.GetByIdAsync(id, cancellationToken);
+        if (receipt is null) return false;
+
+        repository.Delete(receipt);
+        return true;
+    }
+
     private static ReceiptResponseDto MapToDto(Receipt receipt)
     {
         return new ReceiptResponseDto(
@@ -55,14 +74,13 @@ public sealed class ReceiptService(
     }
 }
 
-// Implementação padrão da Estratégia
+// --- CLASSE DA ESTRATÉGIA DE IMPOSTO ---
 public sealed class StandardTaxCalculationStrategy : ITaxCalculationStrategy
 {
     public decimal CalculateDeduction(decimal grossValue, decimal customTaxPercentage)
     {
         if (customTaxPercentage <= 0) return 0;
 
-        // Exemplo: Se o freelancer passa 5 (para 5%), a dedução é GrossValue * 0.05
         var percentageAsDecimal = customTaxPercentage / 100m;
         return grossValue * percentageAsDecimal;
     }

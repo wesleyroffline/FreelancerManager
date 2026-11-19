@@ -15,4 +15,6 @@ public interface IReceiptRepository
     Task<IReadOnlyList<Receipt>> GetAllAsync(CancellationToken cancellationToken = default);
 
     void Update(Receipt receipt);
+
+    void Delete(Receipt receipt);
 }

@@ -18,3 +18,8 @@ public sealed record ReceiptResponseDto(
     decimal NetValue,
     string PaymentMethod,
     DateTime IssuedAt);
+
+public sealed record UpdateReceiptRequestDto(
+    decimal GrossValue,
+    decimal CustomTaxPercentage,
+    string PaymentMethod);
